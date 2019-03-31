@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
-  <title>Hexo</title>
+  <title>求知若饥 ，虚心若愚</title>
   
-  
+  <subtitle>Stay hungry，Stay foolish</subtitle>
   <link href="/NTTBlog/atom.xml" rel="self"/>
   
   <link href="https://ttongniu.github.io/NTTBlog/"/>
@@ -10,7 +10,7 @@
   <id>https://ttongniu.github.io/NTTBlog/</id>
   
   <author>
-    <name>John Doe</name>
+    <name>ttongniu</name>
     
   </author>
   
