@@ -6,7 +6,7 @@
   <link href="/NTTBlog/atom.xml" rel="self"/>
   
   <link href="https://ttongniu.github.io/NTTBlog/"/>
-  <updated>2019-03-31T07:00:43.477Z</updated>
+  <updated>2019-04-05T15:48:41.904Z</updated>
   <id>https://ttongniu.github.io/NTTBlog/</id>
   
   <author>
@@ -15,6 +15,159 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>IDEA 插件个人常用总结</title>
+    <link href="https://ttongniu.github.io/NTTBlog/2019/04/05/IDEA-%E6%8F%92%E4%BB%B6%E4%B8%AA%E4%BA%BA%E5%B8%B8%E7%94%A8%E6%80%BB%E7%BB%93/"/>
+    <id>https://ttongniu.github.io/NTTBlog/2019/04/05/IDEA-插件个人常用总结/</id>
+    <published>2019-04-05T15:46:49.000Z</published>
+    <updated>2019-04-05T15:48:41.904Z</updated>
+    
+    <content type="html"><![CDATA[<p><img src="https://upload-images.jianshu.io/upload_images/11332031-561a7ba2c3d91858.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="插件上篇"><br><img src="https://upload-images.jianshu.io/upload_images/11332031-9766609508ff6714.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="插件下篇"><br>包含idea美化 、代码的检验、热部署、Json 转换   、翻译等</p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/11332031-561a7ba2c3d91858.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240
+      
+    
+    </summary>
+    
+      <category term="Java" scheme="https://ttongniu.github.io/NTTBlog/categories/Java/"/>
+    
+    
+      <category term="IDEA" scheme="https://ttongniu.github.io/NTTBlog/tags/IDEA/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>链表--下篇</title>
+    <link href="https://ttongniu.github.io/NTTBlog/2019/04/05/%E9%93%BE%E8%A1%A8-%E4%B8%8B%E7%AF%87/"/>
+    <id>https://ttongniu.github.io/NTTBlog/2019/04/05/链表-下篇/</id>
+    <published>2019-04-05T15:06:01.000Z</published>
+    <updated>2019-04-05T15:08:41.791Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="如何轻松写出正确的链表代码？"><a href="#如何轻松写出正确的链表代码？" class="headerlink" title="如何轻松写出正确的链表代码？"></a>如何轻松写出正确的链表代码？</h1><h2 id="理解指针或引用的含义"><a href="#理解指针或引用的含义" class="headerlink" title="理解指针或引用的含义"></a>理解指针或引用的含义</h2><p>1.含义：将某个变量（对象）赋值给指针（引用），实际上就是就是将这个变量（对象）的地址赋值给指针（引用）。<br>2.示例：<br>p—&gt;next = q; 表示p节点的后继指针存储了q节点的内存地址。<br>p—&gt;next = p—&gt;next—&gt;next; 表示p节点的后继指针存储了p节点的下下个节点的内存地址。</p><h2 id="警惕指针丢失和内存泄漏（单链表）"><a href="#警惕指针丢失和内存泄漏（单链表）" class="headerlink" title="警惕指针丢失和内存泄漏（单链表）"></a>警惕指针丢失和内存泄漏（单链表）</h2><p>1.插入节点<br><img src="http://upload-images.jianshu.io/upload_images/11332031-91f06bb1fb30dd98.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="插入"><br>在节点a和节点b之间插入节点x，b是a的下一节点，，p指针指向节点a，则造成指针丢失和内存泄漏的代码：p—&gt;next = x;x—&gt;next = p—&gt;next; 显然这会导致x节点的后继指针指向自身。<br>正确的写法是2句代码交换顺序，即：x—&gt;next = p—&gt;next; p—&gt;next = x;<br>2.删除节点<br>在节点a和节点b之间删除节点b，b是a的下一节点，p指针指向节点a：p—&gt;next = p—&gt;next—&gt;next;</p><h2 id="利用“哨兵”简化实现难度"><a href="#利用“哨兵”简化实现难度" class="headerlink" title="利用“哨兵”简化实现难度"></a>利用“哨兵”简化实现难度</h2><h3 id="什么是“哨兵”？"><a href="#什么是“哨兵”？" class="headerlink" title="什么是“哨兵”？"></a>什么是“哨兵”？</h3><p>链表中的“哨兵”节点是解决边界问题的，不参与业务逻辑。如果我们引入“哨兵”节点，则不管链表是否为空，head指针都会指向这个“哨兵”节点。我们把这种有“哨兵”节点的链表称为带头链表，相反，没有“哨兵”节点的链表就称为不带头链表。</p><h3 id="未引入“哨兵”的情况"><a href="#未引入“哨兵”的情况" class="headerlink" title="未引入“哨兵”的情况"></a>未引入“哨兵”的情况</h3><p>如果在p节点后插入一个节点，只需2行代码即可搞定：<br>new_node—&gt;next = p—&gt;next;<br>p—&gt;next = new_node;<br>但，若向空链表中插入一个节点，则代码如下：<br>if(head == null){<br>head = new_node;<br>}<br>如果要删除节点p的后继节点，只需1行代码即可搞定：<br>p—&gt;next = p—&gt;next—&gt;next;<br>但，若是删除链表的最有一个节点（链表中只剩下这个节点），则代码如下：<br>if(head—&gt;next == null){<br>head = null;<br>}<br>从上面的情况可以看出，针对链表的插入、删除操作，需要对插入第一个节点和删除最后一个节点的情况进行特殊处理。这样代码就会显得很繁琐，所以引入“哨兵”节点来解决这个问题。</p><h3 id="引入“哨兵”的情况"><a href="#引入“哨兵”的情况" class="headerlink" title="引入“哨兵”的情况"></a>引入“哨兵”的情况</h3><p>“哨兵”节点不存储数据，无论链表是否为空，head指针都会指向它，作为链表的头结点始终存在。这样，插入第一个节点和插入其他节点，删除最后一个节点和删除其他节点都可以统一为相同的代码实现逻辑了。</p><h3 id="4-“哨兵”还有哪些应用场景？"><a href="#4-“哨兵”还有哪些应用场景？" class="headerlink" title="4.“哨兵”还有哪些应用场景？"></a>4.“哨兵”还有哪些应用场景？</h3><p>哨兵最大的作用就是简化边界条件的处理。<br>对于双向链表 L（L.head 为表头，表头有值，L.head.prev 为 NIL），L.nil 作为该链表的哨兵变量，<br>L.nil.next 指向表头；<br>L.nil.prev 指向表尾；</p><ul><li>不含哨兵的链表（头）插入：<br><code>LIST_INSERT(L, x)x.next = L.headif L.head != NIL  L.head.prev = xL.head = xx.prev = NIL</code></li><li>使用哨兵之后便可以省去条件判断语句：<br><code>LIST_INSERT&#39;(L, x)x.next = L.nil.nextL.nil.next.prev = xL.nil.next = xx.prev = L.nil</code><h2 id="重点留意边界条件处理"><a href="#重点留意边界条件处理" class="headerlink" title="重点留意边界条件处理"></a>重点留意边界条件处理</h2>经常用来检查链表是否正确的边界4个边界条件：</li><li>如果链表为空时，代码是否能正常工作？</li><li>如果链表只包含一个节点时，代码是否能正常工作？</li><li>如果链表只包含两个节点时，代码是否能正常工作？</li><li>代码逻辑在处理头尾节点时是否能正常工作？</li></ul><h2 id="举例画图，辅助思考"><a href="#举例画图，辅助思考" class="headerlink" title="举例画图，辅助思考"></a>举例画图，辅助思考</h2><p><img src="http://upload-images.jianshu.io/upload_images/11332031-f6e345bf30c7fc5d.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="手画"><br>核心思想：释放脑容量，留更多的给逻辑思考，这样就会感觉到思路清晰很多。</p><h2 id="多写多练，没有捷径"><a href="#多写多练，没有捷径" class="headerlink" title="多写多练，没有捷径"></a>多写多练，没有捷径</h2><p>5个常见的链表操作：</p><ul><li>单链表反转</li><li>链表中环的检测</li><li>两个有序链表合并</li><li>删除链表倒数第n个节点</li><li>求链表的中间节点</li></ul>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h1 id=&quot;如何轻松写出正确的链表代码？&quot;&gt;&lt;a href=&quot;#如何轻松写出正确的链表代码？&quot; class=&quot;headerlink&quot; title=&quot;如何轻松写出正确的链表代码？&quot;&gt;&lt;/a&gt;如何轻松写出正确的链表代码？&lt;/h1&gt;&lt;h2 id=&quot;理解指针或引用的含义&quot;&gt;&lt;a hr
+      
+    
+    </summary>
+    
+      <category term="数据结构与算法" scheme="https://ttongniu.github.io/NTTBlog/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/"/>
+    
+    
+      <category term="数据结构" scheme="https://ttongniu.github.io/NTTBlog/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>链表--上篇</title>
+    <link href="https://ttongniu.github.io/NTTBlog/2019/04/05/%E9%93%BE%E8%A1%A8-%E4%B8%8A%E7%AF%87/"/>
+    <id>https://ttongniu.github.io/NTTBlog/2019/04/05/链表-上篇/</id>
+    <published>2019-04-05T15:05:47.000Z</published>
+    <updated>2019-04-05T15:11:52.892Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="什么是链表？"><a href="#什么是链表？" class="headerlink" title="什么是链表？"></a>什么是链表？</h2><ol><li>和数组一样，链表也是一种线性表。</li><li>从内存结构来看，链表的内存结构是不连续的内存空间，是将一组零散的内存块串联起来，从而进行数据存储的数据结构。</li><li>链表中的每一个内存块被称为节点Node。节点除了存储数据外，还需记录链上下一个节点的地址，即后继指针next。<h2 id="为什么使用链表？即链表的特点"><a href="#为什么使用链表？即链表的特点" class="headerlink" title="为什么使用链表？即链表的特点"></a>为什么使用链表？即链表的特点</h2>1.插入、删除数据效率高O(1)级别（只需更改指针指向即可），随机访问效率低O(n)级别（需要从链头至链尾进行遍历）。<br>2.和数组相比，内存空间消耗更大，因为每个存储数据的节点都需要额外的空间存储后继指针。<h2 id="常用链表：单链表、循环链表和双向链表"><a href="#常用链表：单链表、循环链表和双向链表" class="headerlink" title="常用链表：单链表、循环链表和双向链表"></a>常用链表：单链表、循环链表和双向链表</h2><h3 id="单链表"><a href="#单链表" class="headerlink" title="单链表"></a>单链表</h3><img src="http://upload-images.jianshu.io/upload_images/11332031-cf03b5144eae5e36.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="单链表"></li><li>每个节点只包含一个指针，即后继指针。</li><li>单链表有两个特殊的节点，即首节点和尾节点。为什么特殊？用首节点地址表示整条链表，尾节点的后继指针指向空地址null。</li><li>性能特点：插入和删除节点的时间复杂度为O（1），查找的时间复杂度为O(n)。<h3 id="循环链表"><a href="#循环链表" class="headerlink" title="循环链表"></a>循环链表</h3><img src="http://upload-images.jianshu.io/upload_images/11332031-8981737b50fe66f3.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="循环列表"></li><li>除了尾节点的后继指针指向首节点的地址外均与单链表一致。</li><li>适用于存储有循环特点的数据，比如约瑟夫问题。<h3 id="双向链表"><a href="#双向链表" class="headerlink" title="双向链表"></a>双向链表</h3><img src="http://upload-images.jianshu.io/upload_images/11332031-c71148799b78b5f1.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="双向列表"></li><li>节点除了存储数据外，还有两个指针分别指向前一个节点地址（前驱指针prev）和下一个节点地址（后继指针next）。</li><li>首节点的前驱指针prev和尾节点的后继指针均指向空地址。</li><li>性能特点：<br>和单链表相比，存储相同的数据，需要消耗更多的存储空间。<br>插入、删除操作比单链表效率更高O(1)级别。以删除操作为例，删除操作分为2种情况：给定数据值删除对应节点和给定节点地址删除节点。对于前一种情况，单链表和双向链表都需要从头到尾进行遍历从而找到对应节点进行删除，时间复杂度为O(n)。对于第二种情况，要进行删除操作必须找到前驱节点，单链表需要从头到尾进行遍历直到p-&gt;next = q，时间复杂度为O(n)，而双向链表可以直接找到前驱节点，时间复杂度为O(1)。<br>对于一个有序链表，双向链表的按值查询效率要比单链表高一些。因为我们可以记录上次查找的位置p，每一次查询时，根据要查找的值与p的大小关系，决定是往前还是往后查找，所以平均只需要查找一半的数据。<h3 id="双向循环链表：首节点的前驱指针指向尾节点，尾节点的后继指针指向首节点。"><a href="#双向循环链表：首节点的前驱指针指向尾节点，尾节点的后继指针指向首节点。" class="headerlink" title="双向循环链表：首节点的前驱指针指向尾节点，尾节点的后继指针指向首节点。"></a>双向循环链表：首节点的前驱指针指向尾节点，尾节点的后继指针指向首节点。</h3><img src="http://upload-images.jianshu.io/upload_images/11332031-15f5b4c0c98971cc.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="双向循环列表"><h2 id="选择数组还是链表？"><a href="#选择数组还是链表？" class="headerlink" title="选择数组还是链表？"></a>选择数组还是链表？</h2><h3 id="插入、删除和随机访问的时间复杂度"><a href="#插入、删除和随机访问的时间复杂度" class="headerlink" title="插入、删除和随机访问的时间复杂度"></a>插入、删除和随机访问的时间复杂度</h3><img src="http://upload-images.jianshu.io/upload_images/11332031-c5c159a73557be90.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="比较"><br>数组：插入、删除的时间复杂度是O(n)，随机访问的时间复杂度是O(1)。<br>链表：插入、删除的时间复杂度是O(1)，随机访问的时间复杂端是O(n)。<h3 id="数组缺点"><a href="#数组缺点" class="headerlink" title="数组缺点"></a>数组缺点</h3></li></ol><ul><li>若申请内存空间很大，比如100M，但若内存空间没有100M的连续空间时，则会申请失败，尽管内存可用空间超过100M。</li><li>大小固定，若存储空间不足，需进行扩容，一旦扩容就要进行数据复制，而这时非常费时的。<h3 id="链表缺点"><a href="#链表缺点" class="headerlink" title="链表缺点"></a>链表缺点</h3></li><li>内存空间消耗更大，因为需要额外的空间存储指针信息。</li><li>对链表进行频繁的插入和删除操作，会导致频繁的内存申请和释放，容易造成内存碎片，如果是Java语言，还可能会造成频繁的GC（自动垃圾回收器）操作。<h3 id="如何选择？"><a href="#如何选择？" class="headerlink" title="如何选择？"></a>如何选择？</h3>数组简单易用，在实现上使用连续的内存空间，可以借助CPU的缓冲机制预读数组中的数据，所以访问效率更高，而链表在内存中并不是连续存储，所以对CPU缓存不友好，没办法预读。<br>如果代码对内存的使用非常苛刻，那数组就更适合。</li></ul><h2 id="如何实现LRU缓存淘汰算法"><a href="#如何实现LRU缓存淘汰算法" class="headerlink" title="如何实现LRU缓存淘汰算法?"></a>如何实现LRU缓存淘汰算法?</h2><h2 id="什么是缓存？"><a href="#什么是缓存？" class="headerlink" title="什么是缓存？"></a>什么是缓存？</h2><p>缓存是一种提高数据读取性能的技术，在硬件设计、软件开发中都有着非广泛的应用，比如常见的CPU缓存、数据库缓存、浏览器缓存等等。</p><h2 id="为什么使用缓存淘汰策略？即缓存的特点"><a href="#为什么使用缓存淘汰策略？即缓存的特点" class="headerlink" title="为什么使用缓存淘汰策略？即缓存的特点"></a>为什么使用缓存淘汰策略？即缓存的特点</h2><p>缓存的大小是有限的，当缓存被用满时，哪些数据应该被清理出去，哪些数据应该被保留？就需要用到缓存淘汰策略。</p><h2 id="什么是缓存淘汰策略？"><a href="#什么是缓存淘汰策略？" class="headerlink" title="什么是缓存淘汰策略？"></a>什么是缓存淘汰策略？</h2><p>指的是当缓存被用满时清理数据的优先顺序。</p><h2 id="有哪些缓存淘汰策略？"><a href="#有哪些缓存淘汰策略？" class="headerlink" title="有哪些缓存淘汰策略？"></a>有哪些缓存淘汰策略？</h2><p>常见的3种包括先进先出策略FIFO（First In，First Out）、最少使用策略LFU（Least Frenquently Used）、最近最少使用策略LRU（Least Recently Used）。</p><h2 id="链表实现LRU缓存淘汰策略"><a href="#链表实现LRU缓存淘汰策略" class="headerlink" title="链表实现LRU缓存淘汰策略"></a>链表实现LRU缓存淘汰策略</h2><p>当访问的数据没有存储在缓存的链表中时，直接将数据插入链表表头，时间复杂度为O(1)；当访问的数据存在于存储的链表中时，将该数据对应的节点，插入到链表表头,时间复杂度为O(n)。如果缓存被占满，则从链表尾部的数据开始清理，时间复杂度为O(1)。</p><h2 id="数组实现LRU缓存淘汰策略"><a href="#数组实现LRU缓存淘汰策略" class="headerlink" title="数组实现LRU缓存淘汰策略"></a>数组实现LRU缓存淘汰策略</h2><p>用一个数组来存储数据，给每一个数据项标记一个访问时间戳，每次插入新数据项的时候，先把数组中存在的数据项的时间戳自增，并将新数据项的时间戳置为0并插入到数组中。每次访问数组中的数据项的时候，将被访问的数据项的时间戳置为0。当数组空间已满时，将时间戳最大的数据项淘汰。</p><h2 id="利用链表和hashmap实现LRU缓存淘汰策略"><a href="#利用链表和hashmap实现LRU缓存淘汰策略" class="headerlink" title="利用链表和hashmap实现LRU缓存淘汰策略"></a>利用链表和hashmap实现LRU缓存淘汰策略</h2><p>当需要插入新的数据项的时候，如果新数据项在链表中存在（一般称为命中），则把该节点移到链表头部，如果不存在，则新建一个节点，放到链表头部，若缓存满了，则把链表最后一个节点删除即可。在访问数据的时候，如果数据项在链表中存在，则把该节点移到链表头部，否则返回-1。这样一来在链表尾部的节点就是最近最久未访问的数据项。</p><h2 id="设计思想"><a href="#设计思想" class="headerlink" title="设计思想"></a>设计思想</h2><p>时空替换思想：“用空间换时间” 与 “用时间换空间”<br>当内存空间充足的时候，如果我们更加追求代码的执行速度，我们就可以选择空间复杂度相对较高，时间复杂度小相对较低的算法和数据结构，缓存就是空间换时间的例子。如果内存比较紧缺，比如代码跑在手机或者单片机上，这时，就要反过来用时间换空间的思路。</p><h2 id="如何判断一个字符串是否是回文字符串的问题。"><a href="#如何判断一个字符串是否是回文字符串的问题。" class="headerlink" title="如何判断一个字符串是否是回文字符串的问题。"></a>如何判断一个字符串是否是回文字符串的问题。</h2><p>思路：<br>1 快慢指针定位中间节点<br>2 从中间节点对后半部分逆序<br>3 前后半部分比较，判断是否为回文<br>4 后半部分逆序复原<br>时间复杂度On, 空间复杂度O1</p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h2 id=&quot;什么是链表？&quot;&gt;&lt;a href=&quot;#什么是链表？&quot; class=&quot;headerlink&quot; title=&quot;什么是链表？&quot;&gt;&lt;/a&gt;什么是链表？&lt;/h2&gt;&lt;ol&gt;
+&lt;li&gt;和数组一样，链表也是一种线性表。&lt;/li&gt;
+&lt;li&gt;从内存结构来看，链表的内存结构是不连续的内存
+      
+    
+    </summary>
+    
+      <category term="数据结构与算法" scheme="https://ttongniu.github.io/NTTBlog/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/"/>
+    
+    
+      <category term="数据结构" scheme="https://ttongniu.github.io/NTTBlog/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>数组</title>
+    <link href="https://ttongniu.github.io/NTTBlog/2019/04/05/%E6%95%B0%E7%BB%84/"/>
+    <id>https://ttongniu.github.io/NTTBlog/2019/04/05/数组/</id>
+    <published>2019-04-05T15:04:42.000Z</published>
+    <updated>2019-04-05T15:07:11.493Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="数组"><a href="#数组" class="headerlink" title="数组"></a>数组</h1><h2 id="数组如何实现随机访问"><a href="#数组如何实现随机访问" class="headerlink" title="数组如何实现随机访问"></a>数组如何实现随机访问</h2><ul><li>数组是一种线性数据结构，用连续的存储空间存储相同类型数据</li><li>线性表：数组、链表、队列、栈<br>   <img src="http://upload-images.jianshu.io/upload_images/11332031-11d1c2a6b814ad94.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="线性表"></li><li>非线性表：树 图<br>   <img src="http://upload-images.jianshu.io/upload_images/11332031-7803727b5fe76d60.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="非线性表"></li><li>连续的内存空间、相同的数据，所以数组可以随机访问，但对数组进行删除插入，为了保证数组的连续性，就要做大量的数据搬移工作<h2 id="数组如何实现下标随机访问。"><a href="#数组如何实现下标随机访问。" class="headerlink" title="数组如何实现下标随机访问。"></a>数组如何实现下标随机访问。</h2></li><li>引入数组再内存种的分配图，得出寻址公式</li><li><code>a[i]_address = base_address + i * data_type_size</code></li><li>纠正数组和链表的错误认识。数组的查找操作时间复杂度并不是O(1)。 即便是排好的数组，用二分查找，时间复杂度也是O（logn）。</li><li><p>正确表述：数组支持随机访问，根据下标随机访问的时间复杂度为O（1）</p><h2 id="低效的插入和删除"><a href="#低效的插入和删除" class="headerlink" title="低效的插入和删除"></a>低效的插入和删除</h2></li><li>插入：从最好O(1) 最坏O(n) 平均O(n)</li><li>插入：数组若无序，插入新的元素时，可以将第K个位置元素移动到数组末尾，把心的元素，插入到第k个位置，此处复杂度为O(1)。作者举例说明<br><img src="http://upload-images.jianshu.io/upload_images/11332031-89b659d96d3d5df4.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="插入"></li><li>删除：从最好O(1) 最坏O(n) 平均O(n)</li><li>多次删除集中在一起，提高删除效率<br>记录下已经被删除的数据，每次的删除操作并不是搬移数据，只是记录数据已经被删除，当数组没有更多的存储空间时，再触发一次真正的删除操作。即JVM标记清除垃圾回收算法。<h2 id="警惕数组的访问越界问题"><a href="#警惕数组的访问越界问题" class="headerlink" title="警惕数组的访问越界问题"></a>警惕数组的访问越界问题</h2>用C语言循环越界访问的例子说明访问越界的bug。此例在《C陷阱与缺陷》出现过，很惭愧，看过但是现在也只有一丢丢印象。翻了下书，替作者加上一句话：如果用来编译这段程序的编译器按照内存地址递减的方式给变量分配内存，那么内存中的i将会被置为0，则为死循环永远出不去。<h2 id="容器能否完全替代数组"><a href="#容器能否完全替代数组" class="headerlink" title="容器能否完全替代数组"></a>容器能否完全替代数组</h2>相比于数字，java中的ArrayList封装了数组的很多操作，并支持动态扩容。一旦超过村塾容量，扩容时比较耗内存，因为涉及到内存申请和数据搬移。<br>数组适合的场景：</li><li>Java ArrayList 的使用涉及装箱拆箱，有一定的性能损耗，如果特别管柱性能，可以考虑数组</li><li>若数据大小事先已知，并且涉及的数据操作非常简单，可以使用数组</li><li>表示多维数组时，数组往往更加直观。</li><li>业务开发容器即可，底层开发，如网络框架，性能优化。选择数组。<h2 id="解答开篇问题"><a href="#解答开篇问题" class="headerlink" title="解答开篇问题"></a>解答开篇问题</h2></li><li>从偏移角度理解a[0] 0为偏移量，如果从1计数，会多出K-1。增加cpu负担。为什么循环要写成for(int i = 0;i&lt;3;i++) 而不是for(int i = 0 ;i&lt;=2;i++)。第一个直接就可以算出3-0 = 3 有三个数据，而后者 2-0+1个数据，多出1个加法运算，很恼火。</li><li>也有一定的历史原因<h2 id="课后思考"><a href="#课后思考" class="headerlink" title="课后思考"></a>课后思考</h2>大多数主流虚拟机采用可达性分析算法来判断对象是否存活，在标记阶段，会遍历所有 GC ROOTS，将所有 GC ROOTS 可达的对象标记为存活。只有当标记工作完成后，清理工作才会开始。</li></ul><p>不足：1.效率问题。标记和清理效率都不高，但是当知道只有少量垃圾产生时会很高效。2.空间问题。会产生不连续的内存空间碎片。</p><p>二维数组内存寻址：</p><p>对于 m * n 的数组，a [ i ][ j ] (i &lt; m,j &lt; n)的地址为：</p><p>address = base_address + ( i <em> n + j) </em> type_size</p><p>另外，对于数组访问越界造成无限循环，我理解是编译器的问题，对于不同的编译器，在内存分配时，会按照内存地址递增或递减的方式进行分配。老师的程序，如果是内存地址递减的方式，就会造成无限循环。</p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h1 id=&quot;数组&quot;&gt;&lt;a href=&quot;#数组&quot; class=&quot;headerlink&quot; title=&quot;数组&quot;&gt;&lt;/a&gt;数组&lt;/h1&gt;&lt;h2 id=&quot;数组如何实现随机访问&quot;&gt;&lt;a href=&quot;#数组如何实现随机访问&quot; class=&quot;headerlink&quot; title=&quot;数组如何实
+      
+    
+    </summary>
+    
+      <category term="数据结构与算法" scheme="https://ttongniu.github.io/NTTBlog/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/"/>
+    
+    
+      <category term="数据结构" scheme="https://ttongniu.github.io/NTTBlog/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>复杂度分析--下篇</title>
+    <link href="https://ttongniu.github.io/NTTBlog/2019/04/05/%E5%A4%8D%E6%9D%82%E5%BA%A6%E5%88%86%E6%9E%90-%E4%B8%8B/"/>
+    <id>https://ttongniu.github.io/NTTBlog/2019/04/05/复杂度分析-下/</id>
+    <published>2019-04-05T15:02:51.000Z</published>
+    <updated>2019-04-05T15:03:56.604Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="浅析最好、最坏、平均、均摊时间复杂度"><a href="#浅析最好、最坏、平均、均摊时间复杂度" class="headerlink" title="浅析最好、最坏、平均、均摊时间复杂度"></a>浅析最好、最坏、平均、均摊时间复杂度</h1><h2 id="最好情况时间复杂度、"><a href="#最好情况时间复杂度、" class="headerlink" title="最好情况时间复杂度、"></a>最好情况时间复杂度、</h2><p>在最理想的情况下，执行这段代码的时间复杂度</p><h2 id="最坏情况时间复杂度、"><a href="#最坏情况时间复杂度、" class="headerlink" title="最坏情况时间复杂度、"></a>最坏情况时间复杂度、</h2><p>在最糟糕的情况下，执行这段代码的时间复杂度</p><h2 id="平均情况时间复杂度、"><a href="#平均情况时间复杂度、" class="headerlink" title="平均情况时间复杂度、"></a>平均情况时间复杂度、</h2><p>最好与最坏是在极端情况下发生的，平均情况复杂度引入了概率，所以也叫加权平均时间复杂度或者期望时间复杂度。<br>如出现n次情况，将出现n次中每次情况乘以每次情况出现的概率在相加，除以n，再去常量就可以得到平均时间复杂度。</p><h2 id="均摊时间复杂度"><a href="#均摊时间复杂度" class="headerlink" title="均摊时间复杂度"></a>均摊时间复杂度</h2><p>在代码执行的所有复杂度情况中绝大部分是低级别的复杂度，个别情况是高级别复杂度且发生具有时序关系时，可以将个别高级别复杂度均摊到低级别复杂度上。基本上均摊结果就等于低级别复杂度。</p><h3 id="举个荔枝："><a href="#举个荔枝：" class="headerlink" title="举个荔枝："></a>举个荔枝：</h3><p>今天你准备去老王家拜访下，可惜老王的爱人叫他去打个酱油，她告诉你说她限时n分钟🕒给他去买。那么你想着以他家到楼下小卖部来回最多一分钟，那么 “最好的情况”就是你只用等他一分钟。那么也有可能遇到突发情况，比如说电梯人多吖，路上摔了一胶，天知道他去干了什么，用了n分钟，没办法👐，主上有令，n分钟限时，那这就是“最坏的情况”。难点，平均时间复杂度 就是他有可能是第1.2.3…n，中的某个分钟回来，那平均就是1+2+3+…n/n，把 所有可能出现的情况的时间复杂度 相加除以 情况数 。均摊的话就是把花时间多的分给花时间少的，得到一个中间值，所以说这就会和平均混淆，个人觉得主要还是概念不同。假如n是10分钟，那么9分钟分4分钟到1分钟那，8分3给2…，那均摊下来就是5分钟.</p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h1 id=&quot;浅析最好、最坏、平均、均摊时间复杂度&quot;&gt;&lt;a href=&quot;#浅析最好、最坏、平均、均摊时间复杂度&quot; class=&quot;headerlink&quot; title=&quot;浅析最好、最坏、平均、均摊时间复杂度&quot;&gt;&lt;/a&gt;浅析最好、最坏、平均、均摊时间复杂度&lt;/h1&gt;&lt;h2 id=&quot;最
+      
+    
+    </summary>
+    
+      <category term="数据结构与算法" scheme="https://ttongniu.github.io/NTTBlog/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/"/>
+    
+    
+      <category term="数据结构" scheme="https://ttongniu.github.io/NTTBlog/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>复杂度分析--上篇</title>
+    <link href="https://ttongniu.github.io/NTTBlog/2019/04/05/%E5%A4%8D%E6%9D%82%E5%BA%A6%E5%88%86%E6%9E%90-%E4%B8%8A%E7%AF%87/"/>
+    <id>https://ttongniu.github.io/NTTBlog/2019/04/05/复杂度分析-上篇/</id>
+    <published>2019-04-05T14:45:45.000Z</published>
+    <updated>2019-04-05T14:47:28.473Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="什么是复杂度分析？"><a href="#什么是复杂度分析？" class="headerlink" title="什么是复杂度分析？"></a>什么是复杂度分析？</h1><ul><li>数据结构和算法解决是“如何让计算机更快时间、更省空间的解决问题”。</li><li>因此需从执行时间和占用空间两个维度来评估数据结构和算法的性能。</li><li>分别用时间复杂度和空间复杂度两个概念来描述性能问题，二者统称4.为复杂度。</li><li>复杂度描述的是算法执行时间（或占用如何分析、统计算法的执行效率和资源消耗空间）与数据规模的增长关系。<h1 id="为什么要进行复杂度分析？"><a href="#为什么要进行复杂度分析？" class="headerlink" title="为什么要进行复杂度分析？"></a>为什么要进行复杂度分析？</h1><ul><li>和性能测试相比，复杂度分析有不依赖执行环境、成本低、效率高、易操作、指导性强的特点。</li><li>掌握复杂度分析，将能编写出性能更优的代码，有利于降低系统开发和维护成本。<h1 id="如何进行复杂度分析？"><a href="#如何进行复杂度分析？" class="headerlink" title="如何进行复杂度分析？"></a>如何进行复杂度分析？</h1><h2 id="大O表示法"><a href="#大O表示法" class="headerlink" title="大O表示法"></a>大O表示法</h2></li><li>来源</li></ul></li></ul><p><img src="http://upload-images.jianshu.io/upload_images/11332031-b57e131451acc9a9.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="公式"><br> 算法的执行时间与每行代码的执行次数成正比，用T(n) = O(f(n))表示，其中T(n)表示算法执行总时间，f(n)表示每行代码执行总次数，而n往往表示数据的规模。大 O 时间复杂度实际上并不具体表示代码真正的执行时间，而是表示代码执行时间随数据规模增长的变化趋势，所以，也叫作渐进时间复杂度（asymptotic time complexity），简称时间复杂度。</p><ul><li>特点<br>以时间复杂度为例，由于时间复杂度描述的是算法执行时间与数据规模的增长变化趋势，所以常量阶、低阶以及系数实际上对这种增长趋势不产决定性影响，所以在做时间复杂度分析时忽略这些项。</li></ul><h2 id="时间复杂度分析分析法则"><a href="#时间复杂度分析分析法则" class="headerlink" title="时间复杂度分析分析法则"></a>时间复杂度分析分析法则</h2><ul><li>只关注循环执行次数最多的一段代码–单段代码看高频：比如循环。</li><li>加法法则：总复杂度等于量级最大的那段代码的复杂度–比如一段代码中有单循环和多重循环，那么取多重循环的复杂度。</li><li>乘法法则：嵌套代码的复杂度等于嵌套内外代码复杂度的乘积–嵌套代码求乘积：比如递归、多重循环等</li><li>多个规模求加法：比如方法有两个参数控制两个循环的次数，那么这时就取二者复杂度相加。<h2 id="几种常见时间复杂度实例分析"><a href="#几种常见时间复杂度实例分析" class="headerlink" title="几种常见时间复杂度实例分析"></a>几种常见时间复杂度实例分析</h2></li></ul><p>总结了一下，这些复杂度量级几乎涵盖了你今后可以接触的所有代码的复杂度量级。<br><img src="http://upload-images.jianshu.io/upload_images/11332031-2cbaec257f4bdd51.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="复杂度量级"><br>多项式阶：随着数据规模的增长，算法的执行时间和空间占用，按照多项式的比例增长。包括，<br>O(1)（常数阶）–一般情况下，只要算法中不存在循环语句、递归语句、即使有成千上万行的代码，其时间复杂度也是Ο(1)。、<br>O(logn)（对数阶）、<br>O(n)（线性阶）、<br>O(nlogn)（线性对数阶）–比如，归并排序、快速排序<br>O(n^2)（平方阶）、<br>O(n^3)（立方阶）<br>非多项式阶：随着数据规模的增长，算法的执行时间和空间占用暴增，这类算法性能极差。包括，<br>O(2^n)（指数阶）、<br>O(n!)（阶乘阶）<br>常见的复杂度并不多，从低阶到高阶有：O(1)、O(logn)、O(n)、O(nlogn)、O(n2 )。<br><img src="http://upload-images.jianshu.io/upload_images/11332031-61ed22937a8c0200.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="复杂度"></p><h2 id="空间复杂度分析"><a href="#空间复杂度分析" class="headerlink" title="空间复杂度分析"></a>空间复杂度分析</h2><p>表示算法的执行时间与数据规模之间的增长关系。<br>常见的空间复杂度就是 O(1)、O(n)、O(n2 )。</p><h2 id="如何掌握好复杂度分析方法？"><a href="#如何掌握好复杂度分析方法？" class="headerlink" title="如何掌握好复杂度分析方法？"></a>如何掌握好复杂度分析方法？</h2><p>复杂度分析关键在于多练，所谓孰能生巧。</p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h1 id=&quot;什么是复杂度分析？&quot;&gt;&lt;a href=&quot;#什么是复杂度分析？&quot; class=&quot;headerlink&quot; title=&quot;什么是复杂度分析？&quot;&gt;&lt;/a&gt;什么是复杂度分析？&lt;/h1&gt;&lt;ul&gt;
+&lt;li&gt;数据结构和算法解决是“如何让计算机更快时间、更省空间的解决问题”。&lt;/l
+      
+    
+    </summary>
+    
+      <category term="数据结构与算法" scheme="https://ttongniu.github.io/NTTBlog/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/"/>
+    
+    
+      <category term="数据结构" scheme="https://ttongniu.github.io/NTTBlog/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
+    
+  </entry>
   
   <entry>
     <title>Hello World</title>
