@@ -6,7 +6,7 @@
   <link href="/NTTBlog/atom.xml" rel="self"/>
   
   <link href="https://ttongniu.github.io/NTTBlog/"/>
-  <updated>2019-04-06T14:23:39.897Z</updated>
+  <updated>2019-04-07T13:43:11.433Z</updated>
   <id>https://ttongniu.github.io/NTTBlog/</id>
   
   <author>
@@ -15,6 +15,81 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>JVM--CMS与G1垃圾收集器</title>
+    <link href="https://ttongniu.github.io/NTTBlog/2019/04/07/JVM-CMS%E4%B8%8EG1%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E5%99%A8/"/>
+    <id>https://ttongniu.github.io/NTTBlog/2019/04/07/JVM-CMS与G1垃圾收集器/</id>
+    <published>2019-04-07T13:40:18.000Z</published>
+    <updated>2019-04-07T13:43:11.433Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="CMS-（Concurent-mark-sweep）并发标记清除"><a href="#CMS-（Concurent-mark-sweep）并发标记清除" class="headerlink" title="CMS （Concurent mark sweep）并发标记清除"></a>CMS （Concurent mark sweep）并发标记清除</h2><ol><li>步骤：</li></ol><ul><li>初始标记</li><li>并发标记</li><li>重新标记</li><li>并发清除</li></ul><ol start="2"><li>特点：并发收集、低停顿</li><li>问题<br>CPU敏感、浮动垃圾、碎片</li></ol><h2 id="G1（Garbage-first）垃圾优先"><a href="#G1（Garbage-first）垃圾优先" class="headerlink" title="G1（Garbage first）垃圾优先"></a>G1（Garbage first）垃圾优先</h2><p><img src="https://upload-images.jianshu.io/upload_images/11332031-21e8a6ad80701b13.jpeg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="WechatIMG5.jpeg"></p><p>不同于其他的分代回收算法、G1将堆空间划分成了互相独立的区块。每块区域既有可能属于O区、也有可能是Y区，且每类区域空间可以是不连续的（对比CMS的O区和Y区都必须是连续的）。这种将O区划分成多块的理念源于：当并发后台线程寻找可回收的对象时、有些区块包含可回收的对象要比其他区块多很多。虽然在清理这些区块时G1仍然需要暂停应用线程、但可以用相对较少的时间优先回收包含垃圾最多区块。这也是为什么G1命名为Garbage First的原因：第一时间处理垃圾最多的区块。</p><h2 id="G1相比CMS"><a href="#G1相比CMS" class="headerlink" title="G1相比CMS"></a>G1相比CMS</h2><ul><li>G1在压缩空间方面有优势</li><li>G1通过将内存空间分成区域（Region）的方式避免内存碎片问题</li><li>Eden, Survivor, Old区不再固定、在内存使用效率上来说更灵活</li><li>G1可以通过设置预期停顿时间（Pause Time）来控制垃圾收集时间避免应用雪崩现象</li><li>G1在回收内存后会马上同时做合并空闲内存的工作、而CMS默认是在STW（stop the world）的时候做</li><li>G1会在Young GC中使用、而CMS只能在O区使用</li></ul><h2 id="G1适合的场景"><a href="#G1适合的场景" class="headerlink" title="G1适合的场景"></a>G1适合的场景</h2><ul><li>服务端多核CPU、JVM内存占用较大的应用（至少大于4G）</li><li>应用在运行过程中会产生大量内存碎片、需要经常压缩空间</li><li>想要更可控、可预期的GC停顿周期；防止高并发下应用雪崩现象</li></ul><h2 id="G1的四种回收操作方式"><a href="#G1的四种回收操作方式" class="headerlink" title="G1的四种回收操作方式"></a>G1的四种回收操作方式</h2><ul><li>YGC（不同于CMS）</li><li>并发阶段</li><li>混合模式</li><li>full GC （一般是G1出现问题时发生）<br>就目前而言、CMS还是默认首选的GC策略</li></ul><p><img src="https://upload-images.jianshu.io/upload_images/11332031-24a041bcc6ab272b.jpeg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="WechatIMG6.jpeg"></p><p>图中每个小区块都代表G1的一个区域（Region），区块里面的字母代表不同的分代内存空间类型（如[E]Eden,[O]Old,[S]Survivor）空白的区块不属于任何一个分区；G1可以在需要的时候任意指定这个区域属于Eden或是O区之类的。<br>G1 YoungGC在Eden充满时触发，在回收之后所有之前属于Eden的区块全变成空白。然后至少有一个区块是属于S区的（如图半满的那个区域），同时可能有一些数据移到了O区。</p><p><img src="https://upload-images.jianshu.io/upload_images/11332031-d532be1fe18e4cc8.jpeg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="WechatIMG7.jpeg"></p><ol><li>Young区发生了变化、这意味着在G1并发阶段内至少发生了一次YGC（这点和CMS就有区别），Eden在标记之前已经被完全清空，因为在并发阶段应用线程同时在工作、所以可以看到Eden又有新的占用</li><li>一些区域被X标记，这些区域属于O区，此时仍然有数据存放、不同之处在G1已标记出这些区域包含的垃圾最多、也就是回收收益最高的区域</li><li>在并发阶段完成之后实际上O区的容量变得更大了（O+X的方块）。这时因为这个过程中发生了YGC有新的对象进入所致。此外，这个阶段在O区没有回收任何对象：它的作用主要是标记出垃圾最多的区块出来。对象实际上是在后面的阶段真正开始被回收.</li></ol><p><img src="https://upload-images.jianshu.io/upload_images/11332031-4305cec44cf2c175.jpeg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="WechatIMG8.jpeg"></p><p>像普通的YGC那样、G1完全清空掉Eden同时调整survivor区。另外，两个标记也被回收了，他们有个共同的特点是包含最多可回收的对象，因此这两个区域绝对部分空间都被释放了。这两个区域任何存活的对象都被移到了其他区域（和YGC存活对象晋升到O区类似）。这就是为什么G1的堆比CMS内存碎片要少很多的原因–移动这些对象的同时也就是在压缩对内存。</p><p>混合GC阶段会有survivor区的对象晋升到O区；另外，每次混合GC只是清理一部分的O区内存，整个GC会一直持续到几乎所有的标记区域垃圾对象都被回收，这个阶段完了之后G1会重新回到正常的YGC阶段。周期性的，当O区内存占用达到一定数量之后G1又会开启一次新的并行GC阶段.</p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h2 id=&quot;CMS-（Concurent-mark-sweep）并发标记清除&quot;&gt;&lt;a href=&quot;#CMS-（Concurent-mark-sweep）并发标记清除&quot; class=&quot;headerlink&quot; title=&quot;CMS （Concurent mark sweep）并发
+      
+    
+    </summary>
+    
+      <category term="JVM" scheme="https://ttongniu.github.io/NTTBlog/categories/JVM/"/>
+    
+    
+      <category term="垃圾收集器" scheme="https://ttongniu.github.io/NTTBlog/tags/%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E5%99%A8/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>JVM的内存管理</title>
+    <link href="https://ttongniu.github.io/NTTBlog/2019/04/07/JVM%E7%9A%84%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/"/>
+    <id>https://ttongniu.github.io/NTTBlog/2019/04/07/JVM的内存管理/</id>
+    <published>2019-04-07T13:39:25.000Z</published>
+    <updated>2019-04-07T13:42:15.563Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="内存管理-内存分配-内存回收"><a href="#内存管理-内存分配-内存回收" class="headerlink" title="内存管理=内存分配+内存回收"></a>内存管理=内存分配+内存回收</h1><h2 id="内存分配"><a href="#内存分配" class="headerlink" title="内存分配"></a>内存分配</h2><p><img src="https://upload-images.jianshu.io/upload_images/11332031-9e4aeaf766dbf348.jpeg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="WechatIMG3.jpeg"></p><p>JMM指Java内存管理<br>线程之间的共享变量存储在主内存（main memory）中，每个线程都有一个私有的本地内存（local memory），本地内存，又称作TLAB线程本地缓冲区，中存储了该线程以读/写共享变量的副本。本地内存是JMM的一个抽象概念，并不真实存在。它涵盖了缓存，写缓冲区，寄存器以及其他的硬件和编译器优化。</p><p><img src="https://upload-images.jianshu.io/upload_images/11332031-25589022e5b2a3cc.jpeg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="WechatIMG1.jpeg"></p><h3 id="虚拟机栈"><a href="#虚拟机栈" class="headerlink" title="虚拟机栈"></a>虚拟机栈</h3><p>特点如上图。<br>局部变量表存放了各种基本数据类型，对象引用类型，（“对象引用”可能是一个对象起始地址的引用指针，也可能是一个指向代表对象的句柄，不同的JVM实现不同），和return Address类型<br>StackOverflow ： 栈深度超出允许范围<br>OutOfMemory： 当虚拟机栈在动态扩展时，无法申请到足够的内存则抛出</p><p><img src="https://upload-images.jianshu.io/upload_images/11332031-e020ddcbad6b6b7a.jpeg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="WechatIMG2.jpeg"></p><h3 id="堆"><a href="#堆" class="headerlink" title="堆"></a>堆</h3><ul><li>线程共享</li><li>存放所有的对象实例和数组</li><li>可拓展-xmx -xms控制大小</li><li>OutOfMemoryError</li></ul><p>JVM规范中规定的是：所有对象实例及数组都要在堆上分配，但随着编译器发展，也出现了栈上分配等优化技术</p><p>没有在堆上完成对象的内存分配并且也无法扩展堆大小时，将抛出OutOfMemoryError</p><h3 id="方法区"><a href="#方法区" class="headerlink" title="方法区"></a>方法区</h3><ul><li>线程共享</li><li>存放所有已被加载的（类信息、常量、静态变量、JIT编译后的代码）</li><li>Hotspot可以设置大小</li><li>OutOfMemoryError<br>又称非堆，在Hotspot上，方法区的回收和堆的回收是绑定在一起的，任何一方触发full gc都会另一方也进行full gc<h3 id="运行时常量池"><a href="#运行时常量池" class="headerlink" title="运行时常量池"></a>运行时常量池</h3></li><li>运行时常量池是方法区的一部分，所以也是全局共享的。</li><li>其作用是存储 Java 类文件常量池中的符号信息。</li><li>class 文件中存在常量池(非运行时常量池)，其在编译阶段就已经确定；JVM 规范对 class 文件结构有着严格的规范，必须符合此规范的 class 文件才会被 JVM 认可和装载。</li><li>运行时常量池 中保存着一些 class 文件中描述的符号引用，同时还会将这些符号引用所翻译出来的直接引用存储在 运行时常量池 中。</li><li>运行时常量池相对于 class 常量池一大特征就是其具有动态性，Java 规范并不要求常量只能在运行时才产生，也就是说运行时常量池中的内容并不全部来自 class 常量池，class 常量池并非运行时常量池的唯一数据输入口；在运行时可以通过代码生成常量并将其放入运行时常量池中。</li><li>同方法区一样，当运行时常量池无法申请到新的内存时，将抛出 OutOfMemoryError 异常。</li></ul><p>##内存溢出</p><ul><li>堆溢出<br>不断往数组中添加实例<ul><li>栈溢出<br>无限递归的方法调用–StackOverflow<br>不断创建线程 — OOM</li><li>方法区与运行时常量溢出<br>无尽的String.intern()  — before jdk1.6<br>通过cglib 字节码增强，不断创建新类</li></ul></li></ul><h2 id="内存回收"><a href="#内存回收" class="headerlink" title="内存回收"></a>内存回收</h2><h3 id="垃圾回收-—-如何判断对象已死"><a href="#垃圾回收-—-如何判断对象已死" class="headerlink" title="垃圾回收 — 如何判断对象已死"></a>垃圾回收 — 如何判断对象已死</h3><ol><li>引用计数器</li><li>可达性分析<br>2.1. 栈帧中引用的对象<br>2.2. 方法区中静态属性引用的对象<br>2.3. 方法区中常量引用的对象<br>2.4. JNI引用的对象<br>引用计数很难解决循环引用问题<br>可达性分析通过从GC-Root，可能有多个，出发进行搜索，凡是没有在任何路径上的对象，就可以回收了</li></ol><h3 id="回收算法"><a href="#回收算法" class="headerlink" title="回收算法"></a>回收算法</h3><ol><li>标记-清除<br>1.1. Stop The World<br>1.2. 会产生大量碎片</li><li>复制</li><li>标记-整理<br>3.1. 无需额外空间</li><li>分代收集<br>4.1.  针对各年代的特点，采用不同算法。</li></ol><p>标记就是通过可达性分析算法，为所有有引用的对象都打上标记，在标记和清除阶段，都需要将整个程序暂停，也就是stop-the-world。<br>复制算法，如果不想浪费50%的空间，就必须有额外空间做担保，例如老年代给新生代担保，那么由于没有再额外的空间给老年代担保了，所以老年代就不能采用复制算法。<br>标记-整理，又称作标记压缩，适合于老年代。</p><h3 id="垃圾收集器"><a href="#垃圾收集器" class="headerlink" title="垃圾收集器"></a>垃圾收集器</h3><p>Serial、ParNew、Parallel Scavenge、Serial Old、Parallel Old<br>CMS 、G1<br>CMS是知道Java7为止默认的server模式的垃圾收集器<br>G1在Java7引入，在Java8成为推荐</p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h1 id=&quot;内存管理-内存分配-内存回收&quot;&gt;&lt;a href=&quot;#内存管理-内存分配-内存回收&quot; class=&quot;headerlink&quot; title=&quot;内存管理=内存分配+内存回收&quot;&gt;&lt;/a&gt;内存管理=内存分配+内存回收&lt;/h1&gt;&lt;h2 id=&quot;内存分配&quot;&gt;&lt;a href=&quot;#内
+      
+    
+    </summary>
+    
+      <category term="JVM" scheme="https://ttongniu.github.io/NTTBlog/categories/JVM/"/>
+    
+    
+      <category term="JVM内存" scheme="https://ttongniu.github.io/NTTBlog/tags/JVM%E5%86%85%E5%AD%98/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>JVM的内存模型</title>
+    <link href="https://ttongniu.github.io/NTTBlog/2019/04/07/JVM%E7%9A%84%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/"/>
+    <id>https://ttongniu.github.io/NTTBlog/2019/04/07/JVM的内存模型/</id>
+    <published>2019-04-07T13:38:44.000Z</published>
+    <updated>2019-04-07T13:41:37.415Z</updated>
+    
+    <content type="html"><![CDATA[<p><img src="https://upload-images.jianshu.io/upload_images/11332031-02e6d2e1fb85a244.jpeg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="WechatIMG1.jpeg"></p><h2 id="内存模型"><a href="#内存模型" class="headerlink" title="内存模型"></a>内存模型</h2><ul><li>堆</li><li>虚拟机栈</li><li>本地方法栈</li><li>PC寄存器/程序计数器</li><li>方法区</li><li>直接内存<br>内存模型，是由Java虚拟机规范制定的，Java规范分为语言规范和虚拟机规范。<br>蓝色框， 堆和方法区 - 所有线程共享。<br>绿色  ，     线程隔离的数据区。<br>程序计数器是唯一没有定义OutOfMemoryError的内存区域。<br>运行时常量池从Java7开始，已经将字符串常量池从PermGen移到了堆上。</li></ul>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/11332031-02e6d2e1fb85a244.jpeg?imageMogr2/auto-orient/strip%7CimageView2/2/w/124
+      
+    
+    </summary>
+    
+      <category term="JVM" scheme="https://ttongniu.github.io/NTTBlog/categories/JVM/"/>
+    
+    
+      <category term="JVM内存" scheme="https://ttongniu.github.io/NTTBlog/tags/JVM%E5%86%85%E5%AD%98/"/>
+    
+  </entry>
   
   <entry>
     <title>排序优化</title>
