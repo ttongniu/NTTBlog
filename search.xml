@@ -1,6 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[集群高可用、哨兵、持久化、LRU]]></title>
+    <url>%2FNTTBlog%2F2020%2F04%2F14%2F%E9%9B%86%E7%BE%A4%E9%AB%98%E5%8F%AF%E7%94%A8%E3%80%81%E5%93%A8%E5%85%B5%E3%80%81%E6%8C%81%E4%B9%85%E5%8C%96%E3%80%81LRU%2F</url>
+    <content type="text"><![CDATA[Redis 为什么那么快 （10万+/qps） 完全基于内存，绝大多数请求是纯粹的内存操作。 数据结构简单 对数据操作也简单 Redis中的数据结构是专门进行设计的 采取单线程 避免了上下文切换 、竞争条件 锁的问题等 使用IO复用模型 非阻塞 （单线程 多核服务器 我们可以开多个Redis实例） （单机有瓶颈 我们就玩集群 Redis cluster 并且是主从同步 读写分离， Redis cluster 可以支撑N个master node 每个masternode 可以挂载多个slave node） Redis持久化哨兵主从同步###内存淘汰策略]]></content>
+  </entry>
+  <entry>
+    <title><![CDATA[缓存雪崩、穿透、击穿]]></title>
+    <url>%2FNTTBlog%2F2020%2F04%2F14%2F%E7%BC%93%E5%AD%98%E9%9B%AA%E5%B4%A9%E3%80%81%E7%A9%BF%E9%80%8F%E3%80%81%E5%87%BB%E7%A9%BF%2F</url>
+    <content type="text"><![CDATA[缓存雪崩​ 热点数据都会去做缓存，一般缓存都是定时任务去刷新，或者再查不到的时候去更新。我们在缓存数据时会加上过期时间。 当同一时间大面积缓存过期，一瞬间Redis跟没有一样。大量请求直接打到数据库中。 数据库必然扛不住挂了。导致服务瘫痪。 在批量往Redis存数据时，把每个key的失效时间都加上个随机数就好了，保证数据不会在同一时间大面积失效。 保证Redis集群的高可用 主从+哨兵+ 缓存穿透​ 不断请求 缓存与数据库中都不存在的数据。 查数据库时返回null 时也缓存到Redis中 （过期时间设置短一点）。 提供接口时 保持不信任原则 做好参数的校验 非法参数直接返回。 使用Redis的高级用法 – 布隆过滤器 – 原理： bigMap 数据结构+ hash算法 。 缓存击穿​ 热点数据失效，导致大量请求直接打到数据库。 热点数据设置永不失效。 采用分布式锁 查询数据库 更新缓存]]></content>
+      <categories>
+        <category>Redis</category>
+      </categories>
+      <tags>
+        <tag>Redis</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[ArrayList 源码-1.8]]></title>
+    <url>%2FNTTBlog%2F2020%2F04%2F13%2FArrayList-%E6%BA%90%E7%A0%81-1-8%2F</url>
+    <content type="text"><![CDATA[###无参构造器 123456/** * 构造一个空列表的初始容量10。; */ public ArrayList() &#123; this.elementData = DEFAULTCAPACITY_EMPTY_ELEMENTDATA; &#125; ###有参构造器 12345678910111213141516/** * 构造一个与指定初始容量的空列表。; * * @param initialCapacity 列表的初始容量; * @throws IllegalArgumentException 如果指定的初始容量是负的; */ public ArrayList(int initialCapacity) &#123; if (initialCapacity &gt; 0) &#123; this.elementData = new Object[initialCapacity]; &#125; else if (initialCapacity == 0) &#123; this.elementData = EMPTY_ELEMENTDATA; &#125; else &#123; throw new IllegalArgumentException("Illegal Capacity: "+ initialCapacity); &#125; &#125; add 添加方法1234567891011/** * 将指定的元素添加到列表尾部; * * @param e 追加到这个列表的元素 * @return &lt;tt&gt;true&lt;/tt&gt; (as specified by &#123;@link Collection#add&#125;) */ public boolean add(E e) &#123; ensureCapacityInternal(size + 1); //Increments modCount!! elementData[size++] = e; return true; &#125; 123456789101112131415161718private static int calculateCapacity(Object[] elementData, int minCapacity) &#123; if (elementData == DEFAULTCAPACITY_EMPTY_ELEMENTDATA) &#123; return Math.max(DEFAULT_CAPACITY, minCapacity); &#125; return minCapacity; &#125; private void ensureCapacityInternal(int minCapacity) &#123; ensureExplicitCapacity(calculateCapacity(elementData, minCapacity)); &#125; private void ensureExplicitCapacity(int minCapacity) &#123; modCount++; // overflow-conscious code if (minCapacity - elementData.length &gt; 0) grow(minCapacity); &#125; 123456789101112131415161718192021222324/** * 扩容的能力,以确保它可以容纳至少最低容量参数指定的元素的个数。; * * @param minCapacity 所需的最小容量; */ private void grow(int minCapacity) &#123; // overflow-conscious code int oldCapacity = elementData.length; int newCapacity = oldCapacity + (oldCapacity &gt;&gt; 1); if (newCapacity - minCapacity &lt; 0) newCapacity = minCapacity; if (newCapacity - MAX_ARRAY_SIZE &gt; 0) newCapacity = hugeCapacity(minCapacity); // minCapacity is usually close to size, so this is a win: elementData = Arrays.copyOf(elementData, newCapacity); &#125; private static int hugeCapacity(int minCapacity) &#123; if (minCapacity &lt; 0) // overflow throw new OutOfMemoryError(); return (minCapacity &gt; MAX_ARRAY_SIZE) ? Integer.MAX_VALUE : MAX_ARRAY_SIZE; &#125;]]></content>
+  </entry>
+  <entry>
+    <title><![CDATA[jvm调优]]></title>
+    <url>%2FNTTBlog%2F2020%2F04%2F12%2Fjvm%E8%B0%83%E4%BC%98%2F</url>
+    <content type="text"></content>
+  </entry>
+  <entry>
     <title><![CDATA[手撕LRU]]></title>
     <url>%2FNTTBlog%2F2020%2F04%2F12%2F%E6%89%8B%E6%92%95LRU%2F</url>
     <content type="text"><![CDATA[手撕LUR代码思路总结 hashMap+ 双向列表 在双向链表实现中，这里使用一个伪头部和伪尾部标记界限，这样在更新的时候就不需要检查是否是null节点。 1234567891011121314151617181920212223242526272829303132333435363738394041424344454647484950515253545556575859606162636465666768697071727374757677787980818283848586class LRUCache &#123; //双向链表 class DlinkedNode&#123; int key; int value; DLinkNode prev; DLinkNode next; &#125; // 头插入 private void addNode(DLinkedNode node)&#123; node.prev = head; node.next = head.next; head.next.prev =node; head.next = node; &#125; //删除节点 private void removeNode(DLinkedNode node)&#123; DLinkedNode prev = node.prev; DLinkedNode next = node.next; prev.next = next; next.prev = prev; &#125; //移动到头部 private void MoveToHead(DLinkedNode node)&#123; removeNode(node); addNode(node); &#125; //移除尾部节点 private DLinkedNode popTail()&#123; DLinkedNode res = tail.prev; removeNode(node); return res; &#125; private Map&lt;Integer,DLinkedNode&gt; cache = new HashMap&lt;Integer,DLinkedNode&gt;(); private int size; private int capacity; private DLinkedNode head,tail; public LRUCache(int capacity) &#123; this.size =0; this.capacity = capacity; head = new DLinkedNode(); tail = new DLinkedNode(); head.next = tail; tail.prev=head; &#125; public int get(int key) &#123; DLinkedNode node = cache.get(key); if(node == null)&#123; return -1; &#125; moveToHead(node); return node.value; &#125; public void put(int key, int value) &#123; //首先查有无 //有的 变更value值 移到头部 if(node!=null)&#123; node.value = value; moveToHead(node); &#125;else&#123; DLinkedNode newNode = new DLinkedNode(); newNode.key = key; newNode.value = value; cache.put(key,newNode); addNode(newNode); ++size; if(size&gt;capacity)&#123; DLinkedNode tail = popTail(); chche.remove(tail.key); --size; &#125; &#125; &#125;&#125;/** * LRUCache 对象会以如下语句构造和调用: * LRUCache obj = new LRUCache(capacity); * int param_1 = obj.get(key); * obj.put(key,value); */ 复杂度分析 时间复杂度：对于 put 和 get 都是 O(1)O(1)。空间复杂度：O(capacity)O(capacity)，因为哈希表和双向链表最多存储 capacity + 1 个元素。]]></content>

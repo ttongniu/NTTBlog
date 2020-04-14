@@ -6,7 +6,7 @@
   <link href="/NTTBlog/atom.xml" rel="self"/>
   
   <link href="https://ttongniu.github.io/NTTBlog/"/>
-  <updated>2020-04-12T13:13:20.789Z</updated>
+  <updated>2020-04-14T16:10:40.805Z</updated>
   <id>https://ttongniu.github.io/NTTBlog/</id>
   
   <author>
@@ -15,6 +15,88 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>集群高可用、哨兵、持久化、LRU</title>
+    <link href="https://ttongniu.github.io/NTTBlog/2020/04/14/%E9%9B%86%E7%BE%A4%E9%AB%98%E5%8F%AF%E7%94%A8%E3%80%81%E5%93%A8%E5%85%B5%E3%80%81%E6%8C%81%E4%B9%85%E5%8C%96%E3%80%81LRU/"/>
+    <id>https://ttongniu.github.io/NTTBlog/2020/04/14/集群高可用、哨兵、持久化、LRU/</id>
+    <published>2020-04-14T14:09:41.000Z</published>
+    <updated>2020-04-14T16:10:40.805Z</updated>
+    
+    <content type="html"><![CDATA[<h3 id="Redis-为什么那么快-（10万-qps）"><a href="#Redis-为什么那么快-（10万-qps）" class="headerlink" title="Redis 为什么那么快  （10万+/qps）"></a>Redis 为什么那么快  （10万+/qps）</h3><ul><li><p>完全基于内存，绝大多数请求是纯粹的内存操作。</p></li><li><p>数据结构简单 对数据操作也简单  Redis中的数据结构是专门进行设计的</p></li><li><p>采取单线程  避免了上下文切换 、竞争条件 锁的问题等</p></li><li><p>使用IO复用模型 非阻塞</p><p>（单线程   多核服务器    我们可以开多个Redis实例）</p><p>（单机有瓶颈  我们就玩集群  Redis cluster 并且是主从同步 读写分离，  Redis cluster 可以支撑N个master node  每个masternode 可以挂载多个slave node）</p></li></ul><h3 id="Redis持久化"><a href="#Redis持久化" class="headerlink" title="Redis持久化"></a>Redis持久化</h3><h3 id="哨兵"><a href="#哨兵" class="headerlink" title="哨兵"></a>哨兵</h3><h3 id="主从同步"><a href="#主从同步" class="headerlink" title="主从同步"></a>主从同步</h3><p>###内存淘汰策略</p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h3 id=&quot;Redis-为什么那么快-（10万-qps）&quot;&gt;&lt;a href=&quot;#Redis-为什么那么快-（10万-qps）&quot; class=&quot;headerlink&quot; title=&quot;Redis 为什么那么快  （10万+/qps）&quot;&gt;&lt;/a&gt;Redis 为什么那么快  （10万
+      
+    
+    </summary>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>缓存雪崩、穿透、击穿</title>
+    <link href="https://ttongniu.github.io/NTTBlog/2020/04/14/%E7%BC%93%E5%AD%98%E9%9B%AA%E5%B4%A9%E3%80%81%E7%A9%BF%E9%80%8F%E3%80%81%E5%87%BB%E7%A9%BF/"/>
+    <id>https://ttongniu.github.io/NTTBlog/2020/04/14/缓存雪崩、穿透、击穿/</id>
+    <published>2020-04-14T14:08:04.000Z</published>
+    <updated>2020-04-14T14:47:36.376Z</updated>
+    
+    <content type="html"><![CDATA[<h3 id="缓存雪崩"><a href="#缓存雪崩" class="headerlink" title="缓存雪崩"></a>缓存雪崩</h3><p>​        热点数据都会去做缓存，一般缓存都是定时任务去刷新，或者再查不到的时候去更新。我们在缓存数据时会加上过期时间。  当同一时间大面积缓存过期，一瞬间Redis跟没有一样。大量请求直接打到数据库中。 数据库必然扛不住挂了。导致服务瘫痪。</p><ol><li>在批量往Redis存数据时，把每个key的失效时间都加上个随机数就好了，保证数据不会在同一时间大面积失效。</li><li>保证Redis集群的高可用   主从+哨兵+</li></ol><h3 id="缓存穿透"><a href="#缓存穿透" class="headerlink" title="缓存穿透"></a>缓存穿透</h3><p>​       不断请求 缓存与数据库中都不存在的数据。</p><ol><li>查数据库时返回null 时也缓存到Redis中 （过期时间设置短一点）。</li><li>提供接口时 保持不信任原则 做好参数的校验 非法参数直接返回。</li><li>使用Redis的高级用法  – 布隆过滤器   – 原理： bigMap 数据结构+ hash算法    。</li></ol><h3 id="缓存击穿"><a href="#缓存击穿" class="headerlink" title="缓存击穿"></a>缓存击穿</h3><p>​        热点数据失效，导致大量请求直接打到数据库。</p><ol><li><p>热点数据设置永不失效。</p></li><li><p>采用分布式锁  查询数据库 更新缓存</p></li></ol>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h3 id=&quot;缓存雪崩&quot;&gt;&lt;a href=&quot;#缓存雪崩&quot; class=&quot;headerlink&quot; title=&quot;缓存雪崩&quot;&gt;&lt;/a&gt;缓存雪崩&lt;/h3&gt;&lt;p&gt;​        热点数据都会去做缓存，一般缓存都是定时任务去刷新，或者再查不到的时候去更新。我们在缓存数据时会加上过期时间
+      
+    
+    </summary>
+    
+      <category term="Redis" scheme="https://ttongniu.github.io/NTTBlog/categories/Redis/"/>
+    
+    
+      <category term="Redis" scheme="https://ttongniu.github.io/NTTBlog/tags/Redis/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>ArrayList 源码-1.8</title>
+    <link href="https://ttongniu.github.io/NTTBlog/2020/04/13/ArrayList-%E6%BA%90%E7%A0%81-1-8/"/>
+    <id>https://ttongniu.github.io/NTTBlog/2020/04/13/ArrayList-源码-1-8/</id>
+    <published>2020-04-13T09:30:46.000Z</published>
+    <updated>2020-04-13T10:10:40.990Z</updated>
+    
+    <content type="html"><![CDATA[<p>###无参构造器</p><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">  * 构造一个空列表的初始容量10。;</span></span><br><span class="line"><span class="comment">  */</span></span><br><span class="line"> <span class="function"><span class="keyword">public</span> <span class="title">ArrayList</span><span class="params">()</span> </span>&#123;</span><br><span class="line">     <span class="keyword">this</span>.elementData = DEFAULTCAPACITY_EMPTY_ELEMENTDATA;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure><p>###有参构造器</p><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">    * 构造一个与指定初始容量的空列表。;</span></span><br><span class="line"><span class="comment">    *</span></span><br><span class="line"><span class="comment">    * <span class="doctag">@param</span>  initialCapacity  列表的初始容量;</span></span><br><span class="line"><span class="comment">    * <span class="doctag">@throws</span> IllegalArgumentException 如果指定的初始容量是负的;</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="title">ArrayList</span><span class="params">(<span class="keyword">int</span> initialCapacity)</span> </span>&#123;</span><br><span class="line">       <span class="keyword">if</span> (initialCapacity &gt; <span class="number">0</span>) &#123;</span><br><span class="line">           <span class="keyword">this</span>.elementData = <span class="keyword">new</span> Object[initialCapacity];</span><br><span class="line">       &#125; <span class="keyword">else</span> <span class="keyword">if</span> (initialCapacity == <span class="number">0</span>) &#123;</span><br><span class="line">           <span class="keyword">this</span>.elementData = EMPTY_ELEMENTDATA;</span><br><span class="line">       &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">           <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"Illegal Capacity: "</span>+</span><br><span class="line">                                              initialCapacity);</span><br><span class="line">       &#125;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure><h3 id="add-添加方法"><a href="#add-添加方法" class="headerlink" title="add 添加方法"></a>add 添加方法</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 将指定的元素添加到列表尾部;</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> e 追加到这个列表的元素</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> &lt;tt&gt;true&lt;/tt&gt; (as specified by &#123;<span class="doctag">@link</span> Collection#add&#125;)</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">add</span><span class="params">(E e)</span> </span>&#123;</span><br><span class="line">        ensureCapacityInternal(size + <span class="number">1</span>);  <span class="comment">//Increments modCount!!</span></span><br><span class="line">        elementData[size++] = e;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">calculateCapacity</span><span class="params">(Object[] elementData, <span class="keyword">int</span> minCapacity)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (elementData == DEFAULTCAPACITY_EMPTY_ELEMENTDATA) &#123;</span><br><span class="line">            <span class="keyword">return</span> Math.max(DEFAULT_CAPACITY, minCapacity);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> minCapacity;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">ensureCapacityInternal</span><span class="params">(<span class="keyword">int</span> minCapacity)</span> </span>&#123;</span><br><span class="line">        ensureExplicitCapacity(calculateCapacity(elementData, minCapacity));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">ensureExplicitCapacity</span><span class="params">(<span class="keyword">int</span> minCapacity)</span> </span>&#123;</span><br><span class="line">        modCount++;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// overflow-conscious code</span></span><br><span class="line">        <span class="keyword">if</span> (minCapacity - elementData.length &gt; <span class="number">0</span>)</span><br><span class="line">            grow(minCapacity);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">    * 扩容的能力,以确保它可以容纳至少最低容量参数指定的元素的个数。;</span></span><br><span class="line"><span class="comment">    *</span></span><br><span class="line"><span class="comment">    * <span class="doctag">@param</span> minCapacity 所需的最小容量;</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">   <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">grow</span><span class="params">(<span class="keyword">int</span> minCapacity)</span> </span>&#123;</span><br><span class="line">       <span class="comment">// overflow-conscious code</span></span><br><span class="line">       <span class="keyword">int</span> oldCapacity = elementData.length;</span><br><span class="line">       <span class="keyword">int</span> newCapacity = oldCapacity + (oldCapacity &gt;&gt; <span class="number">1</span>);</span><br><span class="line">       <span class="keyword">if</span> (newCapacity - minCapacity &lt; <span class="number">0</span>)</span><br><span class="line">           newCapacity = minCapacity;</span><br><span class="line">       <span class="keyword">if</span> (newCapacity - MAX_ARRAY_SIZE &gt; <span class="number">0</span>)</span><br><span class="line">           newCapacity = hugeCapacity(minCapacity);</span><br><span class="line">       <span class="comment">// minCapacity is usually close to size, so this is a win:</span></span><br><span class="line">       elementData = Arrays.copyOf(elementData, newCapacity);</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">hugeCapacity</span><span class="params">(<span class="keyword">int</span> minCapacity)</span> </span>&#123;</span><br><span class="line">       <span class="keyword">if</span> (minCapacity &lt; <span class="number">0</span>) <span class="comment">// overflow</span></span><br><span class="line">           <span class="keyword">throw</span> <span class="keyword">new</span> OutOfMemoryError();</span><br><span class="line">       <span class="keyword">return</span> (minCapacity &gt; MAX_ARRAY_SIZE) ?</span><br><span class="line">           Integer.MAX_VALUE :</span><br><span class="line">           MAX_ARRAY_SIZE;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;p&gt;###无参构造器&lt;/p&gt;
+&lt;figure class=&quot;highlight java&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;
+      
+    
+    </summary>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>jvm调优</title>
+    <link href="https://ttongniu.github.io/NTTBlog/2020/04/12/jvm%E8%B0%83%E4%BC%98/"/>
+    <id>https://ttongniu.github.io/NTTBlog/2020/04/12/jvm调优/</id>
+    <published>2020-04-12T15:13:27.000Z</published>
+    <updated>2020-04-12T15:13:45.497Z</updated>
+    
+    <summary type="html">
+    
+    </summary>
+    
+    
+  </entry>
   
   <entry>
     <title>手撕LRU</title>
@@ -418,78 +500,6 @@
     
     
       <category term="数据结构" scheme="https://ttongniu.github.io/NTTBlog/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>复杂度分析--下篇</title>
-    <link href="https://ttongniu.github.io/NTTBlog/2019/04/05/%E5%A4%8D%E6%9D%82%E5%BA%A6%E5%88%86%E6%9E%90-%E4%B8%8B/"/>
-    <id>https://ttongniu.github.io/NTTBlog/2019/04/05/复杂度分析-下/</id>
-    <published>2019-04-05T15:02:51.000Z</published>
-    <updated>2019-04-05T15:03:56.604Z</updated>
-    
-    <content type="html"><![CDATA[<h1 id="浅析最好、最坏、平均、均摊时间复杂度"><a href="#浅析最好、最坏、平均、均摊时间复杂度" class="headerlink" title="浅析最好、最坏、平均、均摊时间复杂度"></a>浅析最好、最坏、平均、均摊时间复杂度</h1><h2 id="最好情况时间复杂度、"><a href="#最好情况时间复杂度、" class="headerlink" title="最好情况时间复杂度、"></a>最好情况时间复杂度、</h2><p>在最理想的情况下，执行这段代码的时间复杂度</p><h2 id="最坏情况时间复杂度、"><a href="#最坏情况时间复杂度、" class="headerlink" title="最坏情况时间复杂度、"></a>最坏情况时间复杂度、</h2><p>在最糟糕的情况下，执行这段代码的时间复杂度</p><h2 id="平均情况时间复杂度、"><a href="#平均情况时间复杂度、" class="headerlink" title="平均情况时间复杂度、"></a>平均情况时间复杂度、</h2><p>最好与最坏是在极端情况下发生的，平均情况复杂度引入了概率，所以也叫加权平均时间复杂度或者期望时间复杂度。<br>如出现n次情况，将出现n次中每次情况乘以每次情况出现的概率在相加，除以n，再去常量就可以得到平均时间复杂度。</p><h2 id="均摊时间复杂度"><a href="#均摊时间复杂度" class="headerlink" title="均摊时间复杂度"></a>均摊时间复杂度</h2><p>在代码执行的所有复杂度情况中绝大部分是低级别的复杂度，个别情况是高级别复杂度且发生具有时序关系时，可以将个别高级别复杂度均摊到低级别复杂度上。基本上均摊结果就等于低级别复杂度。</p><h3 id="举个荔枝："><a href="#举个荔枝：" class="headerlink" title="举个荔枝："></a>举个荔枝：</h3><p>今天你准备去老王家拜访下，可惜老王的爱人叫他去打个酱油，她告诉你说她限时n分钟🕒给他去买。那么你想着以他家到楼下小卖部来回最多一分钟，那么 “最好的情况”就是你只用等他一分钟。那么也有可能遇到突发情况，比如说电梯人多吖，路上摔了一胶，天知道他去干了什么，用了n分钟，没办法👐，主上有令，n分钟限时，那这就是“最坏的情况”。难点，平均时间复杂度 就是他有可能是第1.2.3…n，中的某个分钟回来，那平均就是1+2+3+…n/n，把 所有可能出现的情况的时间复杂度 相加除以 情况数 。均摊的话就是把花时间多的分给花时间少的，得到一个中间值，所以说这就会和平均混淆，个人觉得主要还是概念不同。假如n是10分钟，那么9分钟分4分钟到1分钟那，8分3给2…，那均摊下来就是5分钟.</p>]]></content>
-    
-    <summary type="html">
-    
-      
-      
-        &lt;h1 id=&quot;浅析最好、最坏、平均、均摊时间复杂度&quot;&gt;&lt;a href=&quot;#浅析最好、最坏、平均、均摊时间复杂度&quot; class=&quot;headerlink&quot; title=&quot;浅析最好、最坏、平均、均摊时间复杂度&quot;&gt;&lt;/a&gt;浅析最好、最坏、平均、均摊时间复杂度&lt;/h1&gt;&lt;h2 id=&quot;最
-      
-    
-    </summary>
-    
-      <category term="数据结构与算法" scheme="https://ttongniu.github.io/NTTBlog/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/"/>
-    
-    
-      <category term="数据结构" scheme="https://ttongniu.github.io/NTTBlog/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>复杂度分析--上篇</title>
-    <link href="https://ttongniu.github.io/NTTBlog/2019/04/05/%E5%A4%8D%E6%9D%82%E5%BA%A6%E5%88%86%E6%9E%90-%E4%B8%8A%E7%AF%87/"/>
-    <id>https://ttongniu.github.io/NTTBlog/2019/04/05/复杂度分析-上篇/</id>
-    <published>2019-04-05T14:45:45.000Z</published>
-    <updated>2019-04-05T14:47:28.473Z</updated>
-    
-    <content type="html"><![CDATA[<h1 id="什么是复杂度分析？"><a href="#什么是复杂度分析？" class="headerlink" title="什么是复杂度分析？"></a>什么是复杂度分析？</h1><ul><li>数据结构和算法解决是“如何让计算机更快时间、更省空间的解决问题”。</li><li>因此需从执行时间和占用空间两个维度来评估数据结构和算法的性能。</li><li>分别用时间复杂度和空间复杂度两个概念来描述性能问题，二者统称4.为复杂度。</li><li>复杂度描述的是算法执行时间（或占用如何分析、统计算法的执行效率和资源消耗空间）与数据规模的增长关系。<h1 id="为什么要进行复杂度分析？"><a href="#为什么要进行复杂度分析？" class="headerlink" title="为什么要进行复杂度分析？"></a>为什么要进行复杂度分析？</h1><ul><li>和性能测试相比，复杂度分析有不依赖执行环境、成本低、效率高、易操作、指导性强的特点。</li><li>掌握复杂度分析，将能编写出性能更优的代码，有利于降低系统开发和维护成本。<h1 id="如何进行复杂度分析？"><a href="#如何进行复杂度分析？" class="headerlink" title="如何进行复杂度分析？"></a>如何进行复杂度分析？</h1><h2 id="大O表示法"><a href="#大O表示法" class="headerlink" title="大O表示法"></a>大O表示法</h2></li><li>来源</li></ul></li></ul><p><img src="http://upload-images.jianshu.io/upload_images/11332031-b57e131451acc9a9.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="公式"><br> 算法的执行时间与每行代码的执行次数成正比，用T(n) = O(f(n))表示，其中T(n)表示算法执行总时间，f(n)表示每行代码执行总次数，而n往往表示数据的规模。大 O 时间复杂度实际上并不具体表示代码真正的执行时间，而是表示代码执行时间随数据规模增长的变化趋势，所以，也叫作渐进时间复杂度（asymptotic time complexity），简称时间复杂度。</p><ul><li>特点<br>以时间复杂度为例，由于时间复杂度描述的是算法执行时间与数据规模的增长变化趋势，所以常量阶、低阶以及系数实际上对这种增长趋势不产决定性影响，所以在做时间复杂度分析时忽略这些项。</li></ul><h2 id="时间复杂度分析分析法则"><a href="#时间复杂度分析分析法则" class="headerlink" title="时间复杂度分析分析法则"></a>时间复杂度分析分析法则</h2><ul><li>只关注循环执行次数最多的一段代码–单段代码看高频：比如循环。</li><li>加法法则：总复杂度等于量级最大的那段代码的复杂度–比如一段代码中有单循环和多重循环，那么取多重循环的复杂度。</li><li>乘法法则：嵌套代码的复杂度等于嵌套内外代码复杂度的乘积–嵌套代码求乘积：比如递归、多重循环等</li><li>多个规模求加法：比如方法有两个参数控制两个循环的次数，那么这时就取二者复杂度相加。<h2 id="几种常见时间复杂度实例分析"><a href="#几种常见时间复杂度实例分析" class="headerlink" title="几种常见时间复杂度实例分析"></a>几种常见时间复杂度实例分析</h2></li></ul><p>总结了一下，这些复杂度量级几乎涵盖了你今后可以接触的所有代码的复杂度量级。<br><img src="http://upload-images.jianshu.io/upload_images/11332031-2cbaec257f4bdd51.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="复杂度量级"><br>多项式阶：随着数据规模的增长，算法的执行时间和空间占用，按照多项式的比例增长。包括，<br>O(1)（常数阶）–一般情况下，只要算法中不存在循环语句、递归语句、即使有成千上万行的代码，其时间复杂度也是Ο(1)。、<br>O(logn)（对数阶）、<br>O(n)（线性阶）、<br>O(nlogn)（线性对数阶）–比如，归并排序、快速排序<br>O(n^2)（平方阶）、<br>O(n^3)（立方阶）<br>非多项式阶：随着数据规模的增长，算法的执行时间和空间占用暴增，这类算法性能极差。包括，<br>O(2^n)（指数阶）、<br>O(n!)（阶乘阶）<br>常见的复杂度并不多，从低阶到高阶有：O(1)、O(logn)、O(n)、O(nlogn)、O(n2 )。<br><img src="http://upload-images.jianshu.io/upload_images/11332031-61ed22937a8c0200.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="复杂度"></p><h2 id="空间复杂度分析"><a href="#空间复杂度分析" class="headerlink" title="空间复杂度分析"></a>空间复杂度分析</h2><p>表示算法的执行时间与数据规模之间的增长关系。<br>常见的空间复杂度就是 O(1)、O(n)、O(n2 )。</p><h2 id="如何掌握好复杂度分析方法？"><a href="#如何掌握好复杂度分析方法？" class="headerlink" title="如何掌握好复杂度分析方法？"></a>如何掌握好复杂度分析方法？</h2><p>复杂度分析关键在于多练，所谓孰能生巧。</p>]]></content>
-    
-    <summary type="html">
-    
-      
-      
-        &lt;h1 id=&quot;什么是复杂度分析？&quot;&gt;&lt;a href=&quot;#什么是复杂度分析？&quot; class=&quot;headerlink&quot; title=&quot;什么是复杂度分析？&quot;&gt;&lt;/a&gt;什么是复杂度分析？&lt;/h1&gt;&lt;ul&gt;
-&lt;li&gt;数据结构和算法解决是“如何让计算机更快时间、更省空间的解决问题”。&lt;/l
-      
-    
-    </summary>
-    
-      <category term="数据结构与算法" scheme="https://ttongniu.github.io/NTTBlog/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/"/>
-    
-    
-      <category term="数据结构" scheme="https://ttongniu.github.io/NTTBlog/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Hello World</title>
-    <link href="https://ttongniu.github.io/NTTBlog/2019/03/24/hello-world/"/>
-    <id>https://ttongniu.github.io/NTTBlog/2019/03/24/hello-world/</id>
-    <published>2019-03-24T06:38:18.626Z</published>
-    <updated>2019-03-31T07:00:43.477Z</updated>
-    
-    <content type="html"><![CDATA[<p>Welcome to <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="noopener">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="noopener">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="noopener">GitHub</a>.</p><h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="noopener">Writing</a></p><h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="noopener">Server</a></p><h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="noopener">Generating</a></p><h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="noopener">Deployment</a></p>]]></content>
-    
-    <summary type="html">
-    
-      
-      
-        &lt;p&gt;Welcome to &lt;a href=&quot;https://hexo.io/&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;Hexo&lt;/a&gt;! This is your very first post. Check &lt;a href=&quot;https://hexo.
-      
-    
-    </summary>
-    
     
   </entry>
   
